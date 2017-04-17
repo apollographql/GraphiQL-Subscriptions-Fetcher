@@ -1,7 +1,7 @@
 {
   "name": "graphiql-subscriptions-fetcher",
   "version": "0.0.2",
-  "main": "dist/index.js",
+  "main": "dist/fetcher.js",
   "repository": "https://github.com/apollographql/GraphiQL-Subscriptions-Fetcher.git",
   "author": "Urigo <uri.goldshtein@gmail.com>",
   "license": "MIT",
