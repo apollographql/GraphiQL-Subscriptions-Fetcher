@@ -16,29 +16,52 @@ const hasSubscriptionOperation = (graphQlParams: any) => {
   return false;
 };
 
-export const graphQLFetcher = (subscriptionsClient: SubscriptionClient, fallbackFetcher: Function) => {
-  let activeSubscriptionId: number | null = null;
+function getObserver(observerOrNext: { error: Function, next: Function, complete: Function }, error?: Function, complete?: Function) {
+  if ( typeof observerOrNext === 'function' ) {
+    return {
+      next: (v: any) => observerOrNext(v),
+      error: (e: Error) => error && error(e),
+      complete: () => complete && complete(),
+    };
+  }
+
+  return observerOrNext;
+}
+
+export const graphQLFetcher = (subscriptionsClient: SubscriptionClient, fallbackFetcher?: Function) => {
+  let activeSubscriptionId: string | null = null;
 
   return (graphQLParams: any) => {
     if (subscriptionsClient && activeSubscriptionId !== null) {
       subscriptionsClient.unsubscribe(activeSubscriptionId);
+      activeSubscriptionId = null;
     }
 
-    if (subscriptionsClient && hasSubscriptionOperation(graphQLParams)) {
+    if (subscriptionsClient && (hasSubscriptionOperation(graphQLParams) ||
+        (undefined === fallbackFetcher)) ) {
       return {
-        subscribe: (observer: { error: Function, next: Function }) => {
-          observer.next('Your subscription data will appear here after server publication!');
-
+        subscribe: (observerOrNext: { error: Function, next: Function, complete: Function }, onError?: Function, onComplete?: Function) => {
+          const observer = getObserver(observerOrNext, onError, onComplete);
           activeSubscriptionId = subscriptionsClient.subscribe({
             query: graphQLParams.query,
             variables: graphQLParams.variables,
+            operationName: graphQLParams.operationName,
           }, function (error, result) {
-            if (error) {
+            if ( error === null && result === null ) {
+              observer.complete();
+            } else if (error) {
               observer.error(error);
             } else {
               observer.next(result);
             }
           });
+
+          return {
+            unsubscribe: () => {
+              subscriptionsClient.unsubscribe(activeSubscriptionId);
+              activeSubscriptionId = null;
+            },
+          };
         },
       };
     } else {
