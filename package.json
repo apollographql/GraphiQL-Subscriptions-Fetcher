@@ -6,8 +6,8 @@
   "author": "Urigo <uri.goldshtein@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "graphql": "^0.9.1",
-    "subscriptions-transport-ws": "0.5.4"
+    "graphql": "^0.10.5",
+    "subscriptions-transport-ws": "^0.8.2"
   },
   "scripts": {
     "compile": "tsc",
