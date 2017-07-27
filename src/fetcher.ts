@@ -42,7 +42,7 @@ export const graphQLFetcher = (subscriptionsClient: SubscriptionClient, fallback
       return {
         subscribe: (observerOrNext: { error: Function, next: Function, complete: Function }, onError?: Function, onComplete?: Function) => {
           const observer = getObserver(observerOrNext, onError, onComplete);
-          activeSubscriptionId = (subscriptionsClient as any).executeOperation({
+          activeSubscriptionId = subscriptionsClient.executeOperation({
             query: graphQLParams.query,
             variables: graphQLParams.variables,
             operationName: graphQLParams.operationName,
