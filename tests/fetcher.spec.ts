@@ -7,8 +7,13 @@ describe('GraphiQL Fetcher', () => {
 
   beforeEach(() => {
     subscriptionsClient = {
-      subscribe: jest.fn(),
-      unsubscribe: jest.fn(),
+      request: (params) => {
+        return {
+          subscribe: () => ({
+            unsubscribe: () => { },
+          }),
+        };
+      },
     };
     fallbackFetcher = jest.fn();
     fetcher = graphQLFetcher(<any>subscriptionsClient, fallbackFetcher);
