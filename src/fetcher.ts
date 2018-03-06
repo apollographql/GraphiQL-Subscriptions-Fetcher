@@ -34,7 +34,7 @@ export const graphQLFetcher = (subscriptionsClient: SubscriptionClient, fallback
             variables: graphQLParams.variables,
           }, function (error, result) {
             if (error) {
-              observer.error(error);
+              observer.error(JSON.stringify(error));
             } else {
               observer.next(result);
             }
