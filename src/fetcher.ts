@@ -32,6 +32,7 @@ export const graphQLFetcher = (subscriptionsClient: SubscriptionClient, fallback
           activeSubscriptionId = subscriptionsClient.subscribe({
             query: graphQLParams.query,
             variables: graphQLParams.variables,
+            operationName: graphQLParams.operationName|| null,
           }, function (error, result) {
             if (error) {
               observer.error(error);
