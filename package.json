@@ -1,13 +1,13 @@
 {
   "name": "graphiql-subscriptions-fetcher",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "dist/index.js",
   "repository": "https://github.com/apollographql/GraphiQL-Subscriptions-Fetcher.git",
   "author": "Urigo <uri.goldshtein@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "graphql": "^0.9.1",
-    "subscriptions-transport-ws": "0.5.4"
+    "graphql": "0.13.2",
+    "subscriptions-transport-ws": "0.9.14"
   },
   "scripts": {
     "compile": "tsc",
@@ -20,11 +20,11 @@
     "prepublish": "yarn compile && yarn browser-compile"
   },
   "devDependencies": {
-    "@types/graphql": "^0.8.6",
+    "@types/graphql": "0.13.2",
     "@types/jest": "^19.2.2",
     "jest": "^19.0.2",
     "tslint": "^4.5.1",
-    "typescript": "^2.2.1",
+    "typescript": "^2.9.1",
     "webpack": "^2.3.2"
   },
   "jest": {
