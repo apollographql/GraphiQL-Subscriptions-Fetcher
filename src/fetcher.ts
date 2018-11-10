@@ -17,30 +17,20 @@ const hasSubscriptionOperation = (graphQlParams: any) => {
 };
 
 export const graphQLFetcher = (subscriptionsClient: SubscriptionClient, fallbackFetcher: Function) => {
-  let activeSubscriptionId: number | null = null;
+  let activeSubscription = false;
 
   return (graphQLParams: any) => {
-    if (subscriptionsClient && activeSubscriptionId !== null) {
-      subscriptionsClient.unsubscribe(activeSubscriptionId);
+    if (subscriptionsClient && activeSubscription) {
+      subscriptionsClient.unsubscribeAll();
     }
 
     if (subscriptionsClient && hasSubscriptionOperation(graphQLParams)) {
-      return {
-        subscribe: (observer: { error: Function, next: Function }) => {
-          observer.next('Your subscription data will appear here after server publication!');
+      activeSubscription = true;
 
-          activeSubscriptionId = subscriptionsClient.subscribe({
-            query: graphQLParams.query,
-            variables: graphQLParams.variables,
-          }, function (error, result) {
-            if (error) {
-              observer.error(error);
-            } else {
-              observer.next(result);
-            }
-          });
-        },
-      };
+      return subscriptionsClient.request({
+        query: graphQLParams.query,
+        variables: graphQLParams.variables,
+      });
     } else {
       return fallbackFetcher(graphQLParams);
     }
