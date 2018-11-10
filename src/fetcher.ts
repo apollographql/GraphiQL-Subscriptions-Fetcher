@@ -20,19 +20,32 @@ export const graphQLFetcher = (subscriptionsClient: SubscriptionClient, fallback
   let activeSubscription = false;
 
   return (graphQLParams: any) => {
-    if (subscriptionsClient && activeSubscription) {
+    if (!subscriptionsClient) {
+      return fallbackFetcher(graphQLParams);
+    }
+
+    if (activeSubscription) {
       subscriptionsClient.unsubscribeAll();
     }
 
-    if (subscriptionsClient && hasSubscriptionOperation(graphQLParams)) {
+    const subscriptionRequest = () => {
       activeSubscription = true;
 
       return subscriptionsClient.request({
         query: graphQLParams.query,
         variables: graphQLParams.variables,
+        operationName: graphQLParams.operationName,
       });
-    } else {
+    };
+
+    if (hasSubscriptionOperation(graphQLParams)) {
+      return subscriptionRequest();
+    }
+
+    if (fallbackFetcher) {
       return fallbackFetcher(graphQLParams);
     }
+
+    return subscriptionRequest();
   };
 };
