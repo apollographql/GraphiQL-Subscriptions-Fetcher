@@ -17,32 +17,35 @@ const hasSubscriptionOperation = (graphQlParams: any) => {
 };
 
 export const graphQLFetcher = (subscriptionsClient: SubscriptionClient, fallbackFetcher: Function) => {
-  let activeSubscriptionId: number | null = null;
+  let activeSubscription = false;
 
   return (graphQLParams: any) => {
-    if (subscriptionsClient && activeSubscriptionId !== null) {
-      subscriptionsClient.unsubscribe(activeSubscriptionId);
-    }
-
-    if (subscriptionsClient && hasSubscriptionOperation(graphQLParams)) {
-      return {
-        subscribe: (observer: { error: Function, next: Function }) => {
-          observer.next('Your subscription data will appear here after server publication!');
-
-          activeSubscriptionId = subscriptionsClient.subscribe({
-            query: graphQLParams.query,
-            variables: graphQLParams.variables,
-          }, function (error, result) {
-            if (error) {
-              observer.error(error);
-            } else {
-              observer.next(result);
-            }
-          });
-        },
-      };
-    } else {
+    if (!subscriptionsClient) {
       return fallbackFetcher(graphQLParams);
     }
+
+    if (activeSubscription) {
+      subscriptionsClient.unsubscribeAll();
+    }
+
+    const subscriptionRequest = () => {
+      activeSubscription = true;
+
+      return subscriptionsClient.request({
+        query: graphQLParams.query,
+        variables: graphQLParams.variables,
+        operationName: graphQLParams.operationName,
+      });
+    };
+
+    if (hasSubscriptionOperation(graphQLParams)) {
+      return subscriptionRequest();
+    }
+
+    if (fallbackFetcher) {
+      return fallbackFetcher(graphQLParams);
+    }
+
+    return subscriptionRequest();
   };
 };
