@@ -63,4 +63,34 @@ describe('GraphiQL Fetcher', () => {
 
     expect(fallbackFetcher.mock.calls.length).toBe(1);
   });
+
+  describe('with no fallbackFetcher', () => {
+    beforeEach(() => {
+      fetcher = graphQLFetcher(<any>subscriptionsClient);
+    });
+
+    it('should use subscriptions fetcher when using with operation', () => {
+      fetcher({
+        query: 'subscription { ...f }',
+      });
+
+      expect(subscriptionsClient.request.mock.calls.length).toBe(1);
+    });
+
+    it('should use subscriptions fetcher when using query', () => {
+      fetcher({
+        query: 'query { field }',
+      });
+
+      expect(subscriptionsClient.request.mock.calls.length).toBe(1);
+    });
+
+    it('should use subscriptions fetcher when using mutations', () => {
+      fetcher({
+        query: 'mutation { field }',
+      });
+
+      expect(subscriptionsClient.request.mock.calls.length).toBe(1);
+    });
+  });
 });
