@@ -7,7 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "graphql": "^0.9.1",
-    "subscriptions-transport-ws": "0.5.4"
+    "subscriptions-transport-ws": "^0.9.15"
   },
   "scripts": {
     "compile": "tsc",
